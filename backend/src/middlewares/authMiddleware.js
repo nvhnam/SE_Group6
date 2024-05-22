@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
+import Customer from "../models/Customer.js";
+import Admin from "../models/Admin.js";
 
 export const authenticate = async (req, res, next) => {
   const token = req.header("x-auth-token");
@@ -10,10 +11,15 @@ export const authenticate = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let user = await Customer.findById(decoded.user.id);
 
-    const user = await User.findById(decoded.user.id);
     if (!user) {
-      return res.status(401).json({ message: "Invalid token, user not found" });
+      user = await Admin.findById(decoded.user.id);
+      if (!user) {
+        return res
+          .status(401)
+          .json({ message: "Invalid token, user not found" });
+      }
     }
 
     req.user = user;
@@ -31,5 +37,3 @@ export const authorizeAdmin = (req, res, next) => {
     res.status(403).json({ message: "Access denied. Admins only." });
   }
 };
-
-// module.exports = authMiddleware;

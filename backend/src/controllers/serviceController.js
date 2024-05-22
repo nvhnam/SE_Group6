@@ -1,52 +1,104 @@
-// import { find, findById } from "../models/Service.js";
+import Service from "../models/service.js";
 
-export async function getAllServices(req, res) {
+export const getAllServices = async (req, res) => {
   try {
-    const services = await find();
-
+    const services = await Service.find();
     res.json(services);
-  } catch (err) {
-    console.error(err.message);
+  } catch (error) {
+    console.error(error.message);
     res.status(500).json({ message: "Server Error" });
   }
-}
+};
 
-export async function getServiceById(req, res) {
+export const getServiceById = async (req, res) => {
+  const { serviceID } = req.params;
+
   try {
-    const { id } = req.params;
-
-    const service = await findById(id);
-
+    const service = await Service.findOne({ Service_ID: serviceID });
     if (!service) {
       return res.status(404).json({ message: "Service not found" });
     }
-
     res.json(service);
-  } catch (err) {
-    console.error(err.message);
+  } catch (error) {
+    console.error(error.message);
     res.status(500).json({ message: "Server Error" });
   }
-}
+};
 
-export async function updateService(req, res) {
-  const { id } = req.params;
-  const { name, description, price } = req.body;
+export const createService = async (req, res) => {
+  try {
+    const newService = new Service({
+      Service_ID: req.body.Service_ID,
+      Service_name: req.body.Service_name,
+      Description: req.body.Description,
+      Price: req.body.Price,
+    });
+
+    const savedService = await newService.save();
+    res.status(201).json(savedService);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const updateService = async (req, res) => {
+  const { serviceID } = req.params;
 
   try {
-    const service = await Service.findById(id);
-    if (!service) {
+    const updatedService = await Service.findOneAndUpdate(
+      { Service_ID: serviceID },
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedService) {
       return res.status(404).json({ message: "Service not found" });
     }
 
-    if (name) service.name = name;
-    if (description) service.description = description;
-    if (price) service.price = price;
-
-    await service.save();
-
-    res.status(200).json({ message: "Service updated successfully", service });
-  } catch (err) {
-    console.error(err.message);
+    res.json(updatedService);
+  } catch (error) {
+    console.error(error.message);
     res.status(500).json({ message: "Server Error" });
   }
-}
+};
+
+export const deleteService = async (req, res) => {
+  const { serviceID } = req.params;
+
+  try {
+    const deletedService = await Service.findOneAndDelete({
+      Service_ID: serviceID,
+    });
+
+    if (!deletedService) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    res.json({ message: "Service deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const createServices = async (req, res) => {
+  try {
+    const services = req.body.services;
+
+    const existingService = await Service.findOne({
+      Service_ID: services.Service_ID,
+    });
+    if (existingService) {
+      return res
+        .status(400)
+        .json({ message: "Service with this ID already exists" });
+    } else {
+      const savedServices = await Service.insertMany(services);
+      res.status(201).json(savedServices);
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};

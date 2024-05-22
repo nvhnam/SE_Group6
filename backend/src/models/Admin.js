@@ -1,25 +1,26 @@
 import { Schema, model } from "mongoose";
 
-const serviceSchema = new Schema({
-  Service_ID: {
-    type: Schema.Types.ObjectId,
+const adminSchema = new Schema({
+  Admin_ID: {
+    type: String,
     required: true,
     unique: true,
   },
-  Service_name: {
+  Admin_name: {
     type: String,
     required: true,
   },
-  Description: {
+  password: {
     type: String,
     required: true,
   },
-  Price: {
+  email: {
     type: String,
     required: true,
+    unique: true,
   },
 });
 
-const Service = model("Services", serviceSchema);
+const Admin = model("Admin", adminSchema);
 
-export default Service;
+export default Admin;

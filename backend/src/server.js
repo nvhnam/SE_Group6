@@ -1,32 +1,33 @@
 import express from "express";
-import mongoose from "mongoose";
+import connectDB from "./db.js";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js";
 import checkoutRoutes from "./routes/checkoutRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import mechanicRoutes from "./routes/mechanicRoutes.js";
+import customerRoutes from "./routes/CustomerRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
 
+connectDB();
+
 app.use(express.json());
 
-// mongoose
-//   .connect(process.env.DB_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => console.log("MongoDB connected..."))
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
-app.use("/login", authRoutes);
-app.use("/logout", authRoutes);
-app.use("/register", authRoutes);
-app.use("/services", serviceRoutes);
-app.use("/checkout", checkoutRoutes);
-app.use("/admin", adminRoutes);
+// app.use("/login", authRoutes);
+// app.use("/logout", authRoutes);
+// app.use("/register", authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/services", serviceRoutes);
+app.use("/api/checkout", checkoutRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/mechanics", mechanicRoutes);
+app.use("/api/customers", customerRoutes);
+app.use("/api/carts", cartRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Motor Servicing at Home website!");

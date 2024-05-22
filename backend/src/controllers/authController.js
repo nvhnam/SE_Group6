@@ -1,17 +1,18 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
+import Customer from "../models/Customer.js";
+import Admin from "../models/Admin.js";
 
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    let user = await Customer.findOne({ email });
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    user = new User({ username, email, password });
+    user = new Customer({ username, email, password });
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
@@ -29,12 +30,14 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    let user = await Admin.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
+    const isAdmin = user.email === "admin@mail.com";
 
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -42,13 +45,14 @@ export const login = async (req, res) => {
     const payload = {
       user: {
         id: user.id,
+        isAdmin: isAdmin,
       },
     };
 
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: "1h" },
+      { expiresIn: "2h" },
       (err, token) => {
         if (err) throw err;
         res.json({ token });
