@@ -12,10 +12,10 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 const router = Router();
 
 router.get("/", getAllServices);
-router.get("/:id", getServiceById);
+router.get("/:serviceID", getServiceById);
 router.post("/", authMiddleware, createService);
-router.put("/:id", authMiddleware, updateService);
-router.delete("/:id", authMiddleware, deleteService);
+router.put("/:serviceID", authMiddleware, updateService);
+router.delete("/:serviceID", authMiddleware, deleteService);
 router.post("/bulk", authMiddleware, createServices);
 
 export default router;
