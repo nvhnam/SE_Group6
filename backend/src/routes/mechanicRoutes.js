@@ -7,8 +7,11 @@ import {
   updateMechanic,
   deleteMechanic,
 } from "../controllers/mechanicController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = Router();
+
+router.use(authMiddleware);
 
 router.get("/email/:email", getMechanicByEmail);
 

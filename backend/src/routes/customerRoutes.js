@@ -11,8 +11,11 @@ import {
   updateCartForCustomer,
   deleteCartForCustomer,
 } from "../controllers/CustomerController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = Router();
+
+router.use(authMiddleware);
 
 router.get("/", getAllCustomers);
 router.get("/:customerID", getCustomerById);
