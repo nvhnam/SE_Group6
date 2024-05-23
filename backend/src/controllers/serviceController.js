@@ -1,4 +1,5 @@
 import Service from "../models/service.js";
+import mongoose from "mongoose";
 
 export const getAllServices = async (req, res) => {
   try {
@@ -28,7 +29,7 @@ export const getServiceById = async (req, res) => {
 export const createService = async (req, res) => {
   try {
     const newService = new Service({
-      Service_ID: req.body.Service_ID,
+      Service_ID: new mongoose.Types.ObjectId(),
       Service_name: req.body.Service_name,
       Description: req.body.Description,
       Price: req.body.Price,

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import Customer from "../models/Customer.js";
 import Admin from "../models/Admin.js";
 
-export const authenticate = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   const token = req.header("x-auth-token");
 
   if (!token) {
@@ -11,29 +11,17 @@ export const authenticate = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    let user = await Customer.findById(decoded.user.id);
+    req.user = decoded.user;
 
-    if (!user) {
-      user = await Admin.findById(decoded.user.id);
-      if (!user) {
-        return res
-          .status(401)
-          .json({ message: "Invalid token, user not found" });
-      }
+    if (req.user.isAdmin) {
+      req.user = await Admin.findById(req.user.id);
+    } else {
+      req.user = await Customer.findById(req.user.id);
     }
 
-    req.user = user;
     next();
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ message: "Server Error" });
-  }
-};
-
-export const authorizeAdmin = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
-    next();
-  } else {
-    res.status(403).json({ message: "Access denied. Admins only." });
+    console.error("Token is not valid", err);
+    res.status(401).json({ message: "Token is not valid" });
   }
 };

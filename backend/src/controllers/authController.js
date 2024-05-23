@@ -4,18 +4,24 @@ import Customer from "../models/Customer.js";
 import Admin from "../models/Admin.js";
 
 export const register = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { name, email, password, address, phoneNumber } = req.body;
 
   try {
-    let user = await Customer.findOne({ email });
+    let user = await Customer.findOne({ Email: email });
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    user = new Customer({ username, email, password });
+    user = new Customer({
+      Name: name,
+      Email: email,
+      Password: password,
+      Address: address,
+      PhoneNumber: phoneNumber,
+    });
 
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+    user.Password = await bcrypt.hash(password, salt);
 
     await user.save();
 
@@ -30,11 +36,15 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    let user = await Admin.findOne({ email });
+    let user = await Admin.findOne({ Email: email });
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      user = await Customer.findOne({ Email: email });
+      if (!user) {
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
     }
-    const isAdmin = user.email === "admin@mail.com";
+
+    const isAdmin = user instanceof Admin;
 
     const isMatch = await bcrypt.compare(password, user.password);
 

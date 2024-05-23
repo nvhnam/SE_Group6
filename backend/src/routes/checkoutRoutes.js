@@ -1,9 +1,9 @@
 import express from "express";
 import { checkout } from "../controllers/checkoutController.js";
-import { authenticate } from "../middlewares/authMiddleware.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", authenticate, checkout);
+router.post("/", authMiddleware, checkout);
 
 export default router;

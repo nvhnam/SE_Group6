@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 const cartSchema = new Schema({
   Cart_ID: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
     unique: true,
   },

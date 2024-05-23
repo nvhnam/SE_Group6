@@ -1,4 +1,5 @@
 import Mechanic from "../models/Mechanic.js";
+import mongoose from "mongoose";
 
 export const getMechanicByEmail = async (req, res) => {
   const { email } = req.params;
@@ -33,7 +34,7 @@ export const getMechanicByName = async (req, res) => {
 export const createMechanic = async (req, res) => {
   try {
     const newMechanic = new Mechanic({
-      Mechanic_ID: req.body.Mechanic_ID,
+      Mechanic_ID: new mongoose.Types.ObjectId(),
       Mechanic_name: req.body.Mechanic_name,
       password: req.body.password,
       email: req.body.email,

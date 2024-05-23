@@ -1,5 +1,6 @@
 import Customer from "../models/Customer.js";
 import Cart from "../models/Cart.js";
+import mongoose from "mongoose";
 
 export const getAllCustomers = async (req, res) => {
   try {
@@ -29,7 +30,7 @@ export const getCustomerById = async (req, res) => {
 export const createCustomer = async (req, res) => {
   try {
     const newCustomer = new Customer({
-      Customer_ID: req.body.Customer_ID,
+      Customer_ID: new mongoose.Types.ObjectId(),
       Name: req.body.Name,
       Email: req.body.Email,
       Password: req.body.Password,

@@ -1,4 +1,5 @@
 import Cart from "../models/Cart.js";
+import mongoose from "mongoose";
 
 export const getAllCarts = async (req, res) => {
   try {
@@ -57,7 +58,7 @@ export const createCart = async (req, res) => {
     }
 
     const newCart = new Cart({
-      Cart_ID: req.body.Cart_ID,
+      Cart_ID: new mongoose.Types.ObjectId(),
       Customer_ID: req.body.Customer_ID,
     });
 

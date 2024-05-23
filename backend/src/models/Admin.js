@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 const adminSchema = new Schema({
   Admin_ID: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
     unique: true,
   },

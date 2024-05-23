@@ -18,9 +18,6 @@ connectDB();
 
 app.use(express.json());
 
-// app.use("/login", authRoutes);
-// app.use("/logout", authRoutes);
-// app.use("/register", authRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/checkout", checkoutRoutes);

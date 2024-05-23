@@ -1,14 +1,20 @@
+import Order from "../models/Order.js";
 import Payment from "../models/paymentModel.js";
+import mongoose from "mongoose";
 
 export const createPayment = async (req, res) => {
-  const { Order_ID, PaymentDate, Amount, PaymentMethod } = req.body;
-
   try {
+    const order = await Order.findOne(req.body.Order_ID);
+    if (!order) {
+      return res.status(404).json({ message: "Order ID not found" });
+    }
+
     const newPayment = new Payment({
-      Order_ID,
-      PaymentDate,
-      Amount,
-      PaymentMethod,
+      Payment_ID: new mongoose.Types.ObjectId(),
+      Order_ID: req.body.Order_ID,
+      PaymentDate: req.body.PaymentDate,
+      Amount: req.body.Amount,
+      PaymentMethod: req.body.PaymentMethod,
     });
     const existingPayment = await Payment.findOne({
       Payment_ID: newPayment.Payment_ID,

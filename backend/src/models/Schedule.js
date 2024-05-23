@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 
 const scheduleSchema = new Schema({
   Schedule_ID: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
     unique: true,
   },

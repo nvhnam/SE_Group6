@@ -1,4 +1,5 @@
 import Schedule from "../models/scheduleModel.js";
+import mongoose from "mongoose";
 
 export const getAllSchedules = async (req, res) => {
   try {
@@ -26,15 +27,13 @@ export const getScheduleById = async (req, res) => {
 };
 
 export const createSchedule = async (req, res) => {
-  const { Schedule_ID, Cart_ID, Service_ID, Scheduled_Date, Status } = req.body;
-
   try {
     const newSchedule = new Schedule({
-      Schedule_ID,
-      Cart_ID,
-      Service_ID,
-      Scheduled_Date,
-      Status,
+      Schedule_ID: new mongoose.Types.ObjectId(),
+      Cart_ID: req.body.Cart_ID,
+      Service_ID: req.body.Service_ID,
+      Scheduled_Date: req.body.Scheduled_Date,
+      Status: req.body.Status,
     });
     const existingSchedule = await Schedule.findOne({
       Schedule_ID: newSchedule.Schedule_ID,

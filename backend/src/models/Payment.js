@@ -4,7 +4,7 @@ import { Schema, model } from "mongoose";
 
 const paymentSchema = new Schema({
   Payment_ID: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
     unique: true,
   },

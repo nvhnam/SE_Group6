@@ -1,4 +1,5 @@
 import Admin from "../models/Admin.js";
+import mongoose from "mongoose";
 
 export const getAllAdmins = async (req, res) => {
   try {
@@ -28,7 +29,7 @@ export const getAdminById = async (req, res) => {
 export const createAdmin = async (req, res) => {
   try {
     const newAdmin = new Admin({
-      Admin_ID: req.body.Admin_ID,
+      Admin_ID: new mongoose.Types.ObjectId(),
       Admin_name: req.body.Admin_name,
       password: req.body.password,
       email: req.body.email,

@@ -1,9 +1,16 @@
 import Order from "../models/Order.js";
+import Customer from "../models/Customer.js";
+import mongoose from "mongoose";
 
 export const createOrder = async (req, res) => {
   try {
+    const customer = await Customer.findOne(req.body.Customer_ID);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer ID not found" });
+    }
+
     const newOrder = new Order({
-      Order_ID: req.body.Order_ID,
+      Order_ID: new mongoose.Types.ObjectId(),
       Customer_ID: req.body.Customer_ID,
       TotalAmount: req.body.TotalAmount,
       Status: req.body.Status,
