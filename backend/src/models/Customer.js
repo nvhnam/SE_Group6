@@ -1,11 +1,6 @@
 import { Schema, model } from "mongoose";
 
 const customerSchema = new Schema({
-  Customer_ID: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    unique: true,
-  },
   Name: {
     type: String,
     required: true,

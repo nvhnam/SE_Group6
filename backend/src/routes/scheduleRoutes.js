@@ -13,9 +13,9 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.get("/", getAllSchedules);
-router.get("/:scheduleID", getScheduleById);
+router.get("/:scheduleId", getScheduleById);
 router.post("/", createSchedule);
-router.put("/:scheduleID", updateSchedule);
-router.delete("/:scheduleID", deleteSchedule);
+router.put("/:scheduleId", updateSchedule);
+router.delete("/:scheduleId", deleteSchedule);
 
 export default router;

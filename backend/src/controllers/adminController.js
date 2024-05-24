@@ -1,5 +1,4 @@
 import Admin from "../models/Admin.js";
-import mongoose from "mongoose";
 
 export const getAllAdmins = async (req, res) => {
   try {
@@ -12,10 +11,10 @@ export const getAllAdmins = async (req, res) => {
 };
 
 export const getAdminById = async (req, res) => {
-  const { adminID } = req.params;
+  const { adminId } = req.params;
 
   try {
-    const admin = await Admin.findOne({ Admin_ID: adminID });
+    const admin = await Admin.findById(adminId);
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
@@ -29,22 +28,12 @@ export const getAdminById = async (req, res) => {
 export const createAdmin = async (req, res) => {
   try {
     const newAdmin = new Admin({
-      Admin_ID: new mongoose.Types.ObjectId(),
       Admin_name: req.body.Admin_name,
       password: req.body.password,
       email: req.body.email,
     });
-    const existingAdmin = await Admin.findOne({
-      Admin_ID: newAdmin.Admin_ID,
-    });
-    if (existingAdmin) {
-      return res
-        .status(400)
-        .json({ message: "Admin with this ID already exists" });
-    } else {
-      const savedAdmin = await newAdmin.save();
-      res.status(201).json(savedAdmin);
-    }
+    const savedAdmin = await newAdmin.save();
+    res.status(201).json(savedAdmin);
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error" });
@@ -52,13 +41,13 @@ export const createAdmin = async (req, res) => {
 };
 
 export const updateAdmin = async (req, res) => {
-  const { adminID } = req.params;
-  const { Admin_ID, Admin_name, password, email } = req.body;
+  const { adminId } = req.params;
+  const { Admin_name, password, email } = req.body;
 
   try {
-    const updatedAdmin = await Admin.findOneAndUpdate(
-      { Admin_ID: adminID },
-      { Admin_ID, Admin_name, password, email },
+    const updatedAdmin = await Admin.findByIdAndUpdate(
+      adminId,
+      { Admin_name, password, email },
       { new: true, runValidators: true }
     );
 
@@ -74,10 +63,10 @@ export const updateAdmin = async (req, res) => {
 };
 
 export const deleteAdmin = async (req, res) => {
-  const { adminID } = req.params;
+  const { adminId } = req.params;
 
   try {
-    const deletedAdmin = await Admin.findOneAndDelete({ Admin_ID: adminID });
+    const deletedAdmin = await Admin.findByIdAndDelete(adminId);
 
     if (!deletedAdmin) {
       return res.status(404).json({ message: "Admin not found" });

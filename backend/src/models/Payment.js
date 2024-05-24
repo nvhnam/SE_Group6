@@ -3,11 +3,6 @@
 import { Schema, model } from "mongoose";
 
 const paymentSchema = new Schema({
-  Payment_ID: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    unique: true,
-  },
   Order_ID: {
     type: Schema.Types.ObjectId,
     ref: "Order",

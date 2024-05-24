@@ -1,11 +1,6 @@
 import { Schema, model } from "mongoose";
 
 const serviceSchema = new Schema({
-  Service_ID: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    unique: true,
-  },
   Service_name: {
     type: String,
     required: true,

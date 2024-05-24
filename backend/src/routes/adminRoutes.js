@@ -20,15 +20,15 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-router.get("/customers/:customerID", getCustomerById);
+router.get("/customers/:customerId", getCustomerById);
 router.get("/customers", getAllCustomers);
-router.get("/services/:customerID", getServiceById);
-router.put("/services/:customerID", updateService);
+router.get("/services/:serviceId", getServiceById);
+router.put("/services/:serviceId", updateService);
 
 router.get("/", getAllAdmins);
-router.get("/:adminID", getAdminById);
+router.get("/:adminId", getAdminById);
 router.post("/", createAdmin);
-router.put("/:adminID", updateAdmin);
-router.delete("/:adminID", deleteAdmin);
+router.put("/:adminId", updateAdmin);
+router.delete("/:adminId", deleteAdmin);
 
 export default router;

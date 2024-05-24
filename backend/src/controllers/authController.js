@@ -7,6 +7,7 @@ export const register = async (req, res) => {
   const { name, email, password, address, phoneNumber } = req.body;
 
   try {
+    console.log("Register request received:", req.body);
     let user = await Customer.findOne({ Email: email });
     if (user) {
       return res.status(400).json({ message: "User already exists" });
@@ -36,6 +37,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("Login request received:", req.body);
     let user = await Admin.findOne({ Email: email });
     if (!user) {
       user = await Customer.findOne({ Email: email });
@@ -44,9 +46,11 @@ export const login = async (req, res) => {
       }
     }
 
+    console.log("User found:", user);
+
     const isAdmin = user instanceof Admin;
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.Password);
 
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });

@@ -1,5 +1,4 @@
-import Schedule from "../models/scheduleModel.js";
-import mongoose from "mongoose";
+import Schedule from "../models/Schedule.js";
 
 export const getAllSchedules = async (req, res) => {
   try {
@@ -12,10 +11,10 @@ export const getAllSchedules = async (req, res) => {
 };
 
 export const getScheduleById = async (req, res) => {
-  const { scheduleID } = req.params;
+  const { scheduleId } = req.params;
 
   try {
-    const schedule = await Schedule.findByOne({ Schedule_ID: scheduleID });
+    const schedule = await Schedule.findById(scheduleId);
     if (!schedule) {
       return res.status(404).json({ message: "Schedule not found" });
     }
@@ -29,15 +28,12 @@ export const getScheduleById = async (req, res) => {
 export const createSchedule = async (req, res) => {
   try {
     const newSchedule = new Schedule({
-      Schedule_ID: new mongoose.Types.ObjectId(),
       Cart_ID: req.body.Cart_ID,
       Service_ID: req.body.Service_ID,
       Scheduled_Date: req.body.Scheduled_Date,
       Status: req.body.Status,
     });
-    const existingSchedule = await Schedule.findOne({
-      Schedule_ID: newSchedule.Schedule_ID,
-    });
+    const existingSchedule = await Schedule.findOne({ Cart_ID });
     if (existingSchedule) {
       return res
         .status(400)
@@ -53,12 +49,12 @@ export const createSchedule = async (req, res) => {
 };
 
 export const updateSchedule = async (req, res) => {
-  const { scheduleID } = req.params;
+  const { scheduleId } = req.params;
   const { Cart_ID, Service_ID, Scheduled_Date, Status } = req.body;
 
   try {
-    const updatedSchedule = await Schedule.findOneAndUpdate(
-      { Schedule_ID: scheduleID },
+    const updatedSchedule = await Schedule.findByIdAndUpdate(
+      scheduleId,
       { Cart_ID, Service_ID, Scheduled_Date, Status },
       { new: true }
     );
@@ -73,12 +69,10 @@ export const updateSchedule = async (req, res) => {
 };
 
 export const deleteSchedule = async (req, res) => {
-  const { scheduleID } = req.params;
+  const { scheduleId } = req.params;
 
   try {
-    const deletedSchedule = await Schedule.findOneAndDelete({
-      Schedule_ID: scheduleID,
-    });
+    const deletedSchedule = await Schedule.findByIdAndDelete(scheduleId);
     if (!deletedSchedule) {
       return res.status(404).json({ message: "Schedule not found" });
     }

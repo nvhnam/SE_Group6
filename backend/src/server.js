@@ -8,6 +8,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import mechanicRoutes from "./routes/mechanicRoutes.js";
 import customerRoutes from "./routes/CustomerRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 
@@ -24,7 +25,10 @@ app.use("/api/checkout", checkoutRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/mechanics", mechanicRoutes);
 app.use("/api/customers", customerRoutes);
-app.use("/api/carts", cartRoutes);
+
+// API test purpose
+// app.use("/api/carts", cartRoutes);
+// app.use("/api/orders", orderRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Motor Servicing at Home website!");

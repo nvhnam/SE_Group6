@@ -5,6 +5,8 @@ import {
   getOrderById,
   updateOrder,
   deleteOrder,
+  getPaymentsForOrder,
+  addPaymentToOrder,
 } from "../controllers/orderController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
@@ -14,8 +16,11 @@ router.use(authMiddleware);
 
 router.post("/", createOrder);
 router.get("/", getAllOrders);
-router.get("/:orderID", getOrderById);
-router.put("/:orderID", updateOrder);
-router.delete("/:orderID", deleteOrder);
+router.get("/:orderId", getOrderById);
+router.put("/:orderId", updateOrder);
+router.delete("/:orderId", deleteOrder);
+
+router.get("/:orderId/payments", getPaymentsForOrder);
+router.post("/:orderId/payments", addPaymentToOrder);
 
 export default router;

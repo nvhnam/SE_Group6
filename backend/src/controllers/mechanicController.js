@@ -1,5 +1,4 @@
 import Mechanic from "../models/Mechanic.js";
-import mongoose from "mongoose";
 
 export const getMechanicByEmail = async (req, res) => {
   const { email } = req.params;
@@ -34,7 +33,6 @@ export const getMechanicByName = async (req, res) => {
 export const createMechanic = async (req, res) => {
   try {
     const newMechanic = new Mechanic({
-      Mechanic_ID: new mongoose.Types.ObjectId(),
       Mechanic_name: req.body.Mechanic_name,
       password: req.body.password,
       email: req.body.email,
@@ -42,12 +40,12 @@ export const createMechanic = async (req, res) => {
     });
 
     const existingMechanic = await Mechanic.findOne({
-      Mechanic_ID: newMechanic.Mechanic_ID,
+      email: newMechanic.email,
     });
     if (existingMechanic) {
       return res
         .status(400)
-        .json({ message: "Mechanic with this ID already exists" });
+        .json({ message: "Mechanic with this email already exists" });
     } else {
       const savedMechanic = await newMechanic.save();
       res.status(201).json(savedMechanic);
@@ -69,11 +67,11 @@ export const getAllMechanics = async (req, res) => {
 };
 
 export const updateMechanic = async (req, res) => {
-  const { mechanicID } = req.params;
+  const { mechanicId } = req.params;
 
   try {
-    const updatedMechanic = await Mechanic.findOneAndUpdate(
-      { Mechanic_ID: mechanicID },
+    const updatedMechanic = await Mechanic.findByIdAndUpdate(
+      mechanicId,
       { $set: req.body },
       { new: true, runValidators: true }
     );
@@ -90,12 +88,10 @@ export const updateMechanic = async (req, res) => {
 };
 
 export const deleteMechanic = async (req, res) => {
-  const { mechanicID } = req.params;
+  const { mechanicId } = req.params;
 
   try {
-    const deletedMechanic = await Mechanic.findOneAndDelete({
-      Mechanic_ID: mechanicID,
-    });
+    const deletedMechanic = await Mechanic.findByIdAndDelete(mechanicId);
 
     if (!deletedMechanic) {
       return res.status(404).json({ message: "Mechanic not found" });

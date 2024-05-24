@@ -3,11 +3,6 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const scheduleSchema = new Schema({
-  Schedule_ID: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    unique: true,
-  },
   Cart_ID: {
     type: Schema.Types.ObjectId,
     ref: "Cart",

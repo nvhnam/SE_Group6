@@ -1,5 +1,5 @@
 import Cart from "../models/Cart.js";
-import mongoose from "mongoose";
+import Schedule from "../models/Schedule.js";
 
 export const getAllCarts = async (req, res) => {
   try {
@@ -12,9 +12,9 @@ export const getAllCarts = async (req, res) => {
 };
 
 export const getCartById = async (req, res) => {
-  const { cartID } = req.params;
+  const { cartId } = req.params;
   try {
-    const cart = await Cart.findOne({ Cart_ID: cartID });
+    const cart = await Cart.findById(cartId);
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
@@ -26,16 +26,12 @@ export const getCartById = async (req, res) => {
 };
 
 export const updateCart = async (req, res) => {
-  const { cartID } = req.params;
+  const { cartId } = req.params;
   const updates = req.body;
   try {
-    const updatedCart = await Cart.findOneAndUpdate(
-      { Cart_ID: cartID },
-      updates,
-      {
-        new: true,
-      }
-    );
+    const updatedCart = await Cart.findByIdAndUpdate(cartId, updates, {
+      new: true,
+    });
     if (!updatedCart) {
       return res.status(404).json({ message: "Cart not found" });
     }
@@ -48,9 +44,9 @@ export const updateCart = async (req, res) => {
 
 export const createCart = async (req, res) => {
   try {
-    const { Cart_ID } = req.body;
+    const { cartId } = req.body;
 
-    const existingCart = await Cart.findOne({ Cart_ID });
+    const existingCart = await Cart.findById(cartId);
     if (existingCart) {
       return res
         .status(400)
@@ -58,8 +54,8 @@ export const createCart = async (req, res) => {
     }
 
     const newCart = new Cart({
-      Cart_ID: new mongoose.Types.ObjectId(),
       Customer_ID: req.body.Customer_ID,
+      Created_Date: Date.now(),
     });
 
     await newCart.save();
@@ -71,13 +67,25 @@ export const createCart = async (req, res) => {
 };
 
 export const deleteCart = async (req, res) => {
-  const { cartID } = req.params;
+  const { cartId } = req.params;
   try {
-    const deletedCart = await Cart.findOneAndDelete({ Cart_ID: cartID });
+    const deletedCart = await Cart.findByIdAndDelete(cartId);
     if (!deletedCart) {
       return res.status(404).json({ message: "Cart not found" });
     }
     res.json({ message: "Cart deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const getSchedulesByCartId = async (req, res) => {
+  const { cartId } = req.params;
+
+  try {
+    const schedules = await Schedule.find({ Cart_ID: cartId });
+    res.status(200).json(schedules);
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error" });

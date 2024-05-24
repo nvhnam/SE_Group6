@@ -1,6 +1,6 @@
 import Customer from "../models/Customer.js";
 import Cart from "../models/Cart.js";
-import mongoose from "mongoose";
+import Order from "../models/Order.js";
 
 export const getAllCustomers = async (req, res) => {
   try {
@@ -13,10 +13,10 @@ export const getAllCustomers = async (req, res) => {
 };
 
 export const getCustomerById = async (req, res) => {
-  const { customerID } = req.params;
+  const { customerId } = req.params;
 
   try {
-    const customer = await Customer.findOne({ Customer_ID: customerID });
+    const customer = await Customer.findById(customerId);
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
@@ -30,7 +30,6 @@ export const getCustomerById = async (req, res) => {
 export const createCustomer = async (req, res) => {
   try {
     const newCustomer = new Customer({
-      Customer_ID: new mongoose.Types.ObjectId(),
       Name: req.body.Name,
       Email: req.body.Email,
       Password: req.body.Password,
@@ -38,13 +37,13 @@ export const createCustomer = async (req, res) => {
       PhoneNumber: req.body.PhoneNumber,
     });
 
-    const existingCustomer = await Customer.findOne({
-      Customer_ID: newCustomer.Customer_ID,
+    const existingCustomer = await Customer.findById({
+      Email: newCustomer.Email,
     });
     if (existingCustomer) {
       return res
         .status(400)
-        .json({ message: "Customer with this ID already exists" });
+        .json({ message: "Customer with this email already exists" });
     } else {
       const savedCustomer = await newCustomer.save();
       res.status(201).json(savedCustomer);
@@ -56,13 +55,13 @@ export const createCustomer = async (req, res) => {
 };
 
 export const updateCustomer = async (req, res) => {
-  const { customerID } = req.params;
-  const { Customer_ID, Name, Email, Password, Address, PhoneNumber } = req.body;
+  const { customerId } = req.params;
+  const { Name, Email, Password, Address, PhoneNumber } = req.body;
 
   try {
-    const updatedCustomer = await Customer.findOneAndUpdate(
-      { Customer_ID: customerID },
-      { Customer_ID, Name, Email, Password, Address, PhoneNumber },
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      customerId,
+      { Name, Email, Password, Address, PhoneNumber },
       { new: true, runValidators: true }
     );
 
@@ -78,12 +77,10 @@ export const updateCustomer = async (req, res) => {
 };
 
 export const deleteCustomer = async (req, res) => {
-  const { customerID } = req.params;
+  const { customerId } = req.params;
 
   try {
-    const deletedCustomer = await Customer.findOneAndDelete({
-      Customer_ID: customerID,
-    });
+    const deletedCustomer = await Customer.findByIdAndDelete(customerId);
 
     if (!deletedCustomer) {
       return res.status(404).json({ message: "Customer not found" });
@@ -96,24 +93,10 @@ export const deleteCustomer = async (req, res) => {
   }
 };
 
-export const getAllCartsForCustomer = async (req, res) => {
-  const { customerID } = req.params;
-  try {
-    const carts = await Cart.find({ Customer_ID: customerID });
-    res.json(carts);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Server Error" });
-  }
-};
-
 export const getCartForCustomerById = async (req, res) => {
-  const { customerID, cartID } = req.params;
+  const { customerId } = req.params;
   try {
-    const cart = await Cart.findOne({
-      Customer_ID: customerID,
-      Cart_ID: cartID,
-    });
+    const cart = await Cart.find({ Customer_ID: customerId });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
@@ -126,10 +109,9 @@ export const getCartForCustomerById = async (req, res) => {
 
 export const createCartForCustomer = async (req, res) => {
   const { customerID } = req.params;
-  const { Cart_ID, Created_Date } = req.body;
+  const { Created_Date } = req.body;
   try {
     const newCart = new Cart({
-      Cart_ID,
       Customer_ID: customerID,
       Created_Date,
     });
@@ -142,11 +124,11 @@ export const createCartForCustomer = async (req, res) => {
 };
 
 export const updateCartForCustomer = async (req, res) => {
-  const { customerID, cartID } = req.params;
+  const { customerId, cartId } = req.params;
   const { Cart_ID, Created_Date } = req.body;
   try {
     let cart = await Cart.findOneAndUpdate(
-      { Customer_ID: customerID, Cart_ID: cartID },
+      { Customer_ID: customerId, _id: cartId },
       { Cart_ID, Created_Date },
       { new: true }
     );
@@ -161,16 +143,103 @@ export const updateCartForCustomer = async (req, res) => {
 };
 
 export const deleteCartForCustomer = async (req, res) => {
-  const { customerID, cartID } = req.params;
+  const { customerId, cartId } = req.params;
   try {
     const cart = await Cart.findOneAndDelete({
-      Customer_ID: customerID,
-      Cart_ID: cartID,
+      Customer_ID: customerId,
+      _id: cartId,
     });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
     res.json({ message: "Cart deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const getOrdersForCustomer = async (req, res) => {
+  const customerId = req.params.customerId;
+
+  try {
+    const orders = await Order.find({ Customer_ID: customerId });
+    res.json(orders);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const createOrderForCustomer = async (req, res) => {
+  const customerId = req.params.customerId;
+  const { TotalAmount, Status, OrderDate } = req.body;
+
+  try {
+    const customer = await Customer.findById(customerId);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const newOrder = new Order({
+      Customer_ID: customerId,
+      TotalAmount,
+      Status,
+      OrderDate,
+    });
+
+    const savedOrder = await newOrder.save();
+    res.status(201).json(savedOrder);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const updateOrderForCustomer = async (req, res) => {
+  const customerId = req.params.customerId;
+  const orderId = req.params.orderId;
+  const { TotalAmount, Status, OrderDate } = req.body;
+
+  try {
+    const order = await Order.findOne({
+      _id: orderId,
+      Customer_ID: customerId,
+    });
+    if (!order) {
+      return res
+        .status(404)
+        .json({ message: "Order not found for this customer" });
+    }
+
+    order.TotalAmount = TotalAmount;
+    order.Status = Status;
+    order.OrderDate = OrderDate;
+
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const deleteOrderForCustomer = async (req, res) => {
+  const customerId = req.params.customerId;
+  const orderId = req.params.orderId;
+
+  try {
+    const order = await Order.findOne({
+      _id: orderId,
+      Customer_ID: customerId,
+    });
+    if (!order) {
+      return res
+        .status(404)
+        .json({ message: "Order not found for this customer" });
+    }
+    await order.remove();
+    res.json({ message: "Order deleted successfully" });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error" });

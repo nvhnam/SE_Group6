@@ -5,11 +5,14 @@ import {
   createCustomer,
   updateCustomer,
   deleteCustomer,
-  getAllCartsForCustomer,
   getCartForCustomerById,
   createCartForCustomer,
   updateCartForCustomer,
   deleteCartForCustomer,
+  getOrdersForCustomer,
+  createOrderForCustomer,
+  updateOrderForCustomer,
+  deleteOrderForCustomer,
 } from "../controllers/CustomerController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
@@ -18,15 +21,19 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get("/", getAllCustomers);
-router.get("/:customerID", getCustomerById);
+router.get("/:customerId", getCustomerById);
 router.post("/", createCustomer);
-router.put("/:customerID", updateCustomer);
-router.delete("/:customerID", deleteCustomer);
+router.put("/:customerId", updateCustomer);
+router.delete("/:customerId", deleteCustomer);
 
-router.get("/:customerID/carts", getAllCartsForCustomer);
-router.get("/:customerID/carts/:cartID", getCartForCustomerById);
-router.post("/:customerID/carts", createCartForCustomer);
-router.put("/:customerID/carts/:cartID", updateCartForCustomer);
-router.delete("/:customerID/carts/:cartID", deleteCartForCustomer);
+router.get("/:customerId/carts/:cartId", getCartForCustomerById);
+router.post("/:customerId/carts", createCartForCustomer);
+router.put("/:customerId/carts/:cartId", updateCartForCustomer);
+router.delete("/:customerId/carts/:cartId", deleteCartForCustomer);
+
+router.get("/:customerId/orders", getOrdersForCustomer);
+router.post("/:customerId/orders", createOrderForCustomer);
+router.put("/:customerId/orders/:orderId", updateOrderForCustomer);
+router.delete("/:customerId/orders/:orderId", deleteOrderForCustomer);
 
 export default router;

@@ -14,15 +14,10 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get("/email/:email", getMechanicByEmail);
-
 router.get("/name/:name", getMechanicByName);
-
 router.post("/", createMechanic);
-
 router.get("/", getAllMechanics);
-
-router.put("/:mechanicID", updateMechanic);
-
-router.delete("/:mechanicID", deleteMechanic);
+router.put("/:mechanicId", updateMechanic);
+router.delete("/:mechanicId", deleteMechanic);
 
 export default router;
