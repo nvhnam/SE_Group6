@@ -4,8 +4,9 @@ import Admin from "../models/Admin.js";
 
 export const authMiddleware = async (req, res, next) => {
   const token = req.header("x-auth-token");
-
+  console.log(token)
   if (!token) {
+    console.log("no token")
     return res.status(401).json({ message: "No token, authorization denied" });
   }
 

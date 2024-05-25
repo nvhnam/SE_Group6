@@ -1,6 +1,11 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 const customerSchema = new Schema({
+  Customer_ID : {
+    type : Types.ObjectId,
+    default :() => new Types.ObjectId(),
+    unique : true,
+  },
   Name: {
     type: String,
     required: true,

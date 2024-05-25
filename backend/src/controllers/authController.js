@@ -9,6 +9,7 @@ export const register = async (req, res) => {
   try {
     console.log("Register request received:", req.body);
     let user = await Customer.findOne({ Email: email });
+    console.log(user)
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -23,7 +24,6 @@ export const register = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     user.Password = await bcrypt.hash(password, salt);
-
     await user.save();
 
     res.status(201).json({ message: "User registered successfully" });
@@ -51,7 +51,7 @@ export const login = async (req, res) => {
     const isAdmin = user instanceof Admin;
 
     const isMatch = await bcrypt.compare(password, user.Password);
-
+    console.log(isMatch)
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -85,6 +85,14 @@ export const logout = (req, res) => {
     return res
       .status(200)
       .json({ message: `${username} logged out successfully` });
+  } else {
+    return res.status(400).json({ message: "No user to log out" });
+  }
+};
+
+export const check =  async (req, res)=>{
+  if (req.user) {
+    return res.json({ message: "success" })
   } else {
     return res.status(400).json({ message: "No user to log out" });
   }
