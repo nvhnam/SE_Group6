@@ -3,9 +3,9 @@ import Payment from "../models/Payment.js";
 
 export const createPayment = async (req, res) => {
   try {
-    const order = await Order.findById(req.body.Order_ID);
+    const order = await Order.findOne({Order_ID : req.body.Order_ID});
     if (!order) {
-      return res.status(404).json({ message: "Order ID not found" });
+      return res.status(404).json({ "message": "Order ID not found" });
     }
 
     const newPayment = new Payment({

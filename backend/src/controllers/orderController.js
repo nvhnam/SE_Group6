@@ -1,23 +1,32 @@
 import Order from "../models/Order.js";
 import Customer from "../models/Customer.js";
 import Payment from "../models/Payment.js";
+import Cart from "../models/Cart.js";
 
 export const createOrder = async (req, res) => {
   try {
     const customer = await Customer.findById(req.body.Customer_ID);
-    if (!customer) {
-      return res.status(404).json({ message: "Customer ID not found" });
+    if (customer) {
+      return res.status(404).json({ "message": "Customer ID not found" });
+    }
+
+    const cart = await Cart.find({Customer_ID : req.body.Customer_ID})
+    if(cart.length == 0){
+      return res.status(404).json({ "message": "Your cart is empty!" });
     }
 
     const newOrder = new Order({
       Customer_ID: req.body.Customer_ID,
       TotalAmount: req.body.TotalAmount,
-      Status: req.body.Status,
-      OrderDate: Date.now(),
+      DateOrder : Date.now(),
+      Schedule : req.body.schedule,
+      Carts : cart
     });
 
-    const savedOrder = await newOrder.save();
-    res.status(201).json(savedOrder);
+    const savedOrder = await newOrder.save(); 
+
+    await Cart.deleteMany({Customer_ID : req.body.Customer_ID})
+    res.status(201).json({"order":savedOrder, "message" : "Order successfull!"});
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error" });
@@ -37,11 +46,20 @@ export const getAllOrders = async (req, res) => {
 export const getOrderById = async (req, res) => {
   const { orderId } = req.params;
   try {
-    const order = await Order.findById(orderId);
+    const order = await Order.findOne({Order_ID : orderId});
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res.status(404).json({ "message": "Order not found" });
     }
-    res.json(order);
+
+    const cus = await Customer.findOne({Customer_ID : req.body.Customer_ID});
+    if(!cus){
+      return res.status(401).json({ "message": "Order not found" });
+    }
+
+    res.json({
+      "order" : order,
+      "cus" : cus
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error" });

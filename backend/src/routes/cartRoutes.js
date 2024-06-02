@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
-  createCart,
-  getAllCarts,
+  addtoCart,
+  getAllCartsByid,
   getCartById,
   updateCart,
   deleteCart,
@@ -13,8 +13,8 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.post("/", createCart);
-router.get("/", getAllCarts);
+router.post("/", addtoCart);
+router.get("/cartByIduser", getAllCartsByid);
 router.get("/:cartId", getCartById);
 router.put("/:cartId", updateCart);
 router.delete("/:cartId", deleteCart);

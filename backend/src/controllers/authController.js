@@ -69,7 +69,10 @@ export const login = async (req, res) => {
       { expiresIn: "2h" },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ 
+          "id" : user.Customer_ID,
+          "token" : token 
+        });
       }
     );
   } catch (err) {

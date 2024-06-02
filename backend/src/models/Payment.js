@@ -1,11 +1,15 @@
 // paymentModel.js
 
-import { Schema, model } from "mongoose";
+import { Schema,Types, model } from "mongoose";
 
 const paymentSchema = new Schema({
+  Payment_ID : {
+    type : Types.ObjectId,
+    default :() => new Types.ObjectId(),
+    unique : true,
+  },
   Order_ID: {
     type: Schema.Types.ObjectId,
-    ref: "Order",
     required: true,
   },
   PaymentDate: {

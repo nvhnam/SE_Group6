@@ -1,9 +1,12 @@
 import Cart from "../models/Cart.js";
 import Schedule from "../models/Schedule.js";
+import Service from "../models/Service.js";
+import { Schema, Types ,model } from "mongoose";
 
-export const getAllCarts = async (req, res) => {
+export const getAllCartsByid = async (req, res) => {
+  const { iduser } = req.query;
   try {
-    const carts = await Cart.find();
+    const carts = await Cart.find({Customer_ID : iduser})
     res.json(carts);
   } catch (error) {
     console.error(error.message);
@@ -42,41 +45,70 @@ export const updateCart = async (req, res) => {
   }
 };
 
-export const createCart = async (req, res) => {
+export const addtoCart = async (req, res) => {
   try {
-    const { cartId } = req.body;
-
-    const existingCart = await Cart.findById(cartId);
-    if (existingCart) {
+    const { servID } = req.body;
+    const existingService = await Cart.findOne({
+      Service_id :servID,
+      Customer_ID : req.body.iduser
+    });
+    
+    if (existingService) {
       return res
         .status(400)
-        .json({ message: "Cart with this ID already exists" });
+        .json({ "message": "Cart with this ID already exists" });
     }
 
+    const countCart = await Cart.find({Customer_ID : req.body.iduser})
+
+    console.log(countCart)
+    if(countCart.length === 5){
+      return res
+        .status(400)
+        .json({ "message": "Cart get to max limit (5 services)" });
+    }
+
+    const service = await Service.findOne({Service_ID : req.body.servID})
+    
+    console.log(service)
+    if(!service){
+      return res
+      .status(400)
+      .json({ "message": "Service not exist!" });
+    }
+
+    console.log(service.Service_name)
+    console.log(req.body.iduser)
+    const cartId = new Types.ObjectId();
+
     const newCart = new Cart({
-      Customer_ID: req.body.Customer_ID,
-      Created_Date: Date.now(),
+      Cart_ID : cartId,
+      Service_id : req.body.servID,
+      Service_name : service.Service_name,
+      Service_price : service.Price,
+      Service_price_value : service.price_value,
+      Customer_ID: req.body.iduser
     });
 
     await newCart.save();
-    res.status(201).json(newCart);
+    res.status(200).json({"message": "done"});
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Server Error" });
+    console.error(error);
+    res.status(500).json({ "message": "Server Error" });
   }
 };
 
 export const deleteCart = async (req, res) => {
   const { cartId } = req.params;
   try {
-    const deletedCart = await Cart.findByIdAndDelete(cartId);
+    const deletedCart = await Cart.findOneAndDelete({ Cart_ID: new Types.ObjectId(cartId)});
     if (!deletedCart) {
-      return res.status(404).json({ message: "Cart not found" });
+      return res.status(404).json({ "message": "Cart not found" });
     }
-    res.json({ message: "Cart deleted successfully" });
+    res.json({ "message": "Cart deleted successfully" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ "message": "Server Error" });
   }
 };
 
