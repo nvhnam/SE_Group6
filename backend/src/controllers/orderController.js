@@ -15,16 +15,24 @@ export const createOrder = async (req, res) => {
       return res.status(404).json({ "message": "Your cart is empty!" });
     }
 
+    const cus = await Customer.findOne({Customer_ID : req.body.Customer_ID})
+
+    console.log(cus)
+
     const newOrder = new Order({
       Customer_ID: req.body.Customer_ID,
       TotalAmount: req.body.TotalAmount,
       DateOrder : Date.now(),
       Schedule : req.body.schedule,
+      Name : cus.Name ,
+      Email : cus.Email ,
+      PhoneNumber : cus.PhoneNumber,
+      Address : cus.Address,
       Carts : cart
     });
 
     const savedOrder = await newOrder.save(); 
-
+    console.log(savedOrder)
     await Cart.deleteMany({Customer_ID : req.body.Customer_ID})
     res.status(201).json({"order":savedOrder, "message" : "Order successfull!"});
   } catch (error) {

@@ -59,6 +59,26 @@ const orderSchema = new Schema({
     required: true,
   },
 
+  Name : {
+    type : String,
+    required: true,
+  },
+  
+  Email : {
+    type : String,
+    required: true
+  },
+
+  PhoneNumber : {
+    type : String,
+    required: true
+  },
+
+  Address : {
+    type : String,
+    required: true
+  },
+
   Carts :  [cartSchema]
 });
 
