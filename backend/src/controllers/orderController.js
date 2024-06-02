@@ -2,6 +2,7 @@ import Order from "../models/Order.js";
 import Customer from "../models/Customer.js";
 import Payment from "../models/Payment.js";
 import Cart from "../models/Cart.js";
+import { Schema, Types,model } from "mongoose";
 
 export const createOrder = async (req, res) => {
   try {
@@ -32,7 +33,6 @@ export const createOrder = async (req, res) => {
     });
 
     const savedOrder = await newOrder.save(); 
-    console.log(savedOrder)
     await Cart.deleteMany({Customer_ID : req.body.Customer_ID})
     res.status(201).json({"order":savedOrder, "message" : "Order successfull!"});
   } catch (error) {
@@ -54,19 +54,12 @@ export const getAllOrders = async (req, res) => {
 export const getOrderById = async (req, res) => {
   const { orderId } = req.params;
   try {
-    const order = await Order.findOne({Order_ID : orderId});
+    const order = await Order.findOne({Order_ID : new Types.ObjectId(orderId)});
     if (!order) {
       return res.status(404).json({ "message": "Order not found" });
     }
-
-    const cus = await Customer.findOne({Customer_ID : req.body.Customer_ID});
-    if(!cus){
-      return res.status(401).json({ "message": "Order not found" });
-    }
-
     res.json({
       "order" : order,
-      "cus" : cus
     });
   } catch (error) {
     console.error(error.message);
